@@ -10,9 +10,11 @@
         "MixinEntityRenderer",
         "MixinFontRenderer",
         "MixinGuiMainMenu",
+        "MixinGuiScreen",
         "MixinGuiUtilRenderComponents",
         "MixinMinecraft",
-        "MixinNetworkManager"
+        "MixinNetworkManager",
+        "MxinEntityLivingBase"
     ],
     "client": [
         "IMinecraft"

@@ -20,30 +20,30 @@ public class AutoGHead extends Module {
     private final CoolDown cd = new CoolDown(1);
     private State state = State.WAITINGTOSWITCH;
     private int originalSlot;
-    
+
     public AutoGHead() {
         super("AutoGHead", ModuleCategory.combat);
         this.registerSetting(delay = new DoubleSliderSetting("delay", 50, 100, 0, 200, 1));
         this.registerSetting(coolDown = new DoubleSliderSetting("cooldown(ms)", 1000, 1200, 0, 5000, 1));
         this.registerSetting(health = new SliderSetting("health", 7, 0, 20, 0.1));
-        
+
     }
-    
+
     @Subscribe
     public void update(UpdateEvent e) {
         if(!Utils.Player.isPlayerInGame())
             return;
-        if(mc.thePlayer.getHealth() < health.getInput() && cd.hasFinished()) {
+        if((mc.thePlayer.getHealth() < health.getInput()) && cd.hasFinished()) {
             switch(state) {
-                case WAITINGTOSWITCH:
-                    cd.setCooldown((int) Utils.Client.ranModuleVal(delay, Utils.Java.rand())/3);
-                    break;
+            case WAITINGTOSWITCH:
+                cd.setCooldown((int) Utils.Client.ranModuleVal(delay, Utils.Java.rand())/3);
+                break;
                 case NONE:
                     int slot = getGHeadSlot();
                     if(slot == -1 ) return;
                     originalSlot = mc.thePlayer.inventory.currentItem;
                     mc.thePlayer.inventory.currentItem = slot;
-                    
+
                     cd.setCooldown((int) Utils.Client.ranModuleVal(delay, Utils.Java.rand())/3);
                     break;
                 case SWITCHED:
@@ -53,7 +53,7 @@ public class AutoGHead extends Module {
                     break;
                 case SWITCHEDANDCLICKED:
                     mc.thePlayer.inventory.currentItem = originalSlot;
-                    
+
                     cd.setCooldown((int) Utils.Client.ranModuleVal(coolDown, Utils.Java.rand()));
                     break;
             }
@@ -61,28 +61,27 @@ public class AutoGHead extends Module {
             cd.start();
         }
     }
-    
+
     public int getGHeadSlot() {
         for (int slot = 0; slot <= 8; slot++) {
             ItemStack itemInSlot = mc.thePlayer.inventory.getStackInSlot(slot);
-            if (itemInSlot != null && itemInSlot.getItem() instanceof ItemSkull
-                    && (itemInSlot.getDisplayName().toLowerCase().contains("golden") && itemInSlot.getDisplayName().toLowerCase().contains("head"))) {
-                return slot;
-            }
+            if ((itemInSlot != null) && (itemInSlot.getItem() instanceof ItemSkull)
+                    && (itemInSlot.getDisplayName().toLowerCase().contains("golden") && itemInSlot.getDisplayName().toLowerCase().contains("head")))
+				return slot;
         }
         return -1;
     }
-    
+
     public enum State {
+    	WAITINGTOSWITCH,
         NONE,
-        WAITINGTOSWITCH,
         SWITCHED,
         SWITCHEDANDCLICKED;
-        
+
         private static State[] vals = values();
         public State next() {
             return vals[(this.ordinal()+1) % vals.length];
         }
     }
-    
+
 }
